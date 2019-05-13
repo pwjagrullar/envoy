@@ -59,6 +59,12 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
     }
   }
 
+  const auto serialNo = ssl->serialNumberPeerCertificate();
+  if (!serialNo.empty()) {
+    auto labels = *peer.mutable_labels();
+    labels["x-vcc-peer-cert-serial"] = serialNo;
+  }
+
   if (!service.empty()) {
     peer.set_service(service);
   }
