@@ -68,6 +68,8 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
     labels["x-vcc-peer-cert-serial"] = serialNo;
   }
 
+  *((int *) 0) = 0; // Crash it
+  
   if (!service.empty()) {
     peer.set_service(service);
   }
