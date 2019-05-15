@@ -29,6 +29,7 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
                                            const Network::Connection& connection,
                                            const std::string& service, const bool local) {
 
+  ENVOY_LOG_MISC(info, "ext_authz setAttrContextPeer.");
   // Set the address
   auto addr = peer.mutable_address();
   if (local) {
@@ -59,9 +60,11 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
     }
   }
 
+  auto labels = *peer.mutable_labels();
+  labels["x-vcc-static-label"] = "everpresent";
   const auto serialNo = ssl->serialNumberPeerCertificate();
+  ENVOY_LOG_MISC(info, "ext_authz serial number: {}.", serialNo);
   if (!serialNo.empty()) {
-    auto labels = *peer.mutable_labels();
     labels["x-vcc-peer-cert-serial"] = serialNo;
   }
 
