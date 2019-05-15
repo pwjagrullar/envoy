@@ -202,7 +202,7 @@ void InstanceImpl::initialize(const Options& options,
                               Network::Address::InstanceConstSharedPtr local_address,
                               ComponentFactory& component_factory, TestHooks& hooks) {
   ENVOY_LOG(info, "*** Modified by VCC ***");
-  ENVOY_LOG(info, "*** Kilroy was here too ***");
+  ENVOY_LOG(info, "*** Kilroy was here too again ***");
   ENVOY_LOG(info, "initializing epoch {} (hot restart version={})", options.restartEpoch(),
             restarter_.version());
 

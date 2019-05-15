@@ -40,26 +40,36 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
     Envoy::Network::Utility::addressToProtobufAddress(*connection.remoteAddress(), *addr);
   }
 
+
   // Set the principal
   // Preferably the SAN from the peer's cert or
   // Subject from the peer's cert.
   Ssl::ConnectionInfo* ssl = const_cast<Ssl::ConnectionInfo*>(connection.ssl());
   if (ssl != nullptr) {
+    std::string principal;
     if (local) {
-      const auto uriSans = ssl->serialNumberPeerCertificate();
+      const auto uriSans = ssl->uriSanLocalCertificate();
       if (uriSans.empty()) {
-        peer.set_principal(ssl->serialNumberPeerCertificate());
+        principal = ssl->subjectLocalCertificate();
       } else {
-        peer.set_principal(ssl->serialNumberPeerCertificate());
+        principal = uriSans[0];
       }
     } else {
-      const auto uriSans = ssl->serialNumberPeerCertificate();
+      const auto uriSans = ssl->uriSanPeerCertificate();
       if (uriSans.empty()) {
-        peer.set_principal(ssl->serialNumberPeerCertificate());
+        principal = ssl->subjectPeerCertificate();
       } else {
-        peer.set_principal(ssl->serialNumberPeerCertificate());
+        principal = uriSans[0];
       }
     }
+
+    const auto serialNo = ssl->serialNumberPeerCertificate();
+    ENVOY_LOG_MISC(info, "ext_authz serial number: {}.", serialNo);
+    if (!serialNo.empty()) {
+      principal = principal + ",x-vcc-peer-cert-serial=" + serialNo;
+    }
+
+    peer.set_principal(principal);
   }
 
   auto labels = *peer.mutable_labels();
