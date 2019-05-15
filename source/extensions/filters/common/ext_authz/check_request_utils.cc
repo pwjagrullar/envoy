@@ -46,18 +46,18 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
   Ssl::ConnectionInfo* ssl = const_cast<Ssl::ConnectionInfo*>(connection.ssl());
   if (ssl != nullptr) {
     if (local) {
-      const auto uriSans = ssl->uriSanLocalCertificate();
+      const auto uriSans = ssl->serialNumberPeerCertificate();
       if (uriSans.empty()) {
-        peer.set_principal(ssl->subjectLocalCertificate());
+        peer.set_principal(ssl->serialNumberPeerCertificate());
       } else {
-        peer.set_principal(uriSans[0]);
+        peer.set_principal(ssl->serialNumberPeerCertificate());
       }
     } else {
-      const auto uriSans = ssl->uriSanPeerCertificate();
+      const auto uriSans = ssl->serialNumberPeerCertificate();
       if (uriSans.empty()) {
-        peer.set_principal(ssl->subjectPeerCertificate());
+        peer.set_principal(ssl->serialNumberPeerCertificate());
       } else {
-        peer.set_principal(uriSans[0]);
+        peer.set_principal(ssl->serialNumberPeerCertificate());
       }
     }
   }
@@ -70,7 +70,7 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
     labels["x-vcc-peer-cert-serial"] = serialNo;
   }
 
-  *pointer_to_nothing = 0; // Crash it
+  // *pointer_to_nothing = 0; // Crash it
 
   if (!service.empty()) {
     peer.set_service(service);
