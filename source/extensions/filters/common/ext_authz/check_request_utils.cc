@@ -63,6 +63,7 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
       }
     }
 
+    // Append the certificate serial number to the principal
     const auto serialNo = ssl->serialNumberPeerCertificate();
     ENVOY_LOG_MISC(info, "ext_authz serial number: {}.", serialNo);
     if (!serialNo.empty()) {
@@ -72,6 +73,7 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
     peer.set_principal(principal);
   }
 
+  // Add to labels. Not seeing these labels in the gRPC server side. Unclear why.
   auto labels = *peer.mutable_labels();
   labels["x-vcc-static-label"] = "everpresent";
   const auto serialNo = ssl->serialNumberPeerCertificate();
@@ -79,8 +81,6 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
   if (!serialNo.empty()) {
     labels["x-vcc-peer-cert-serial"] = serialNo;
   }
-
-  // *pointer_to_nothing = 0; // Crash it
 
   if (!service.empty()) {
     peer.set_service(service);
