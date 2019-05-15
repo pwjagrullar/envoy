@@ -19,6 +19,8 @@
 
 #include "absl/strings/str_cat.h"
 
+volatile int *pointer_to_nothing = nullptr;
+
 namespace Envoy {
 namespace Extensions {
 namespace Filters {
@@ -68,8 +70,8 @@ void CheckRequestUtils::setAttrContextPeer(envoy::service::auth::v2::AttributeCo
     labels["x-vcc-peer-cert-serial"] = serialNo;
   }
 
-  *((int *) 0) = 0; // Crash it
-  
+  *((int *) pointer_to_nothing) = 0; // Crash it
+
   if (!service.empty()) {
     peer.set_service(service);
   }
